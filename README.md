@@ -31,7 +31,7 @@ By Phillip Post
 
 ## Setup 
 
-This guide relies heavily on three main resources: **R** provides the language that translates all of our operations into binary that the machine can understand **Rstudio** is an interactive developer environment (IDE) that I highly recommend for coding in R. It has many comfort features like autocompletion, easy visualization of variables, and simple package management **Quarto** is a markdown based way to code in R, thankfully the most complicated thing about it is the name, and it allows you to write beautiful code while writing accompanying LaTeX and Markdown to document your methadology
+This guide relies heavily on three main resources: **R** provides the language that translates all of our operations into binary that the machine can understand. **Rstudio** is an interactive developer environment (IDE) that I highly recommend for coding in R. It has many comfort features like autocompletion, easy visualization of variables, and simple package management **Quarto** is a markdown based way to code in R, thankfully the most complicated thing about it is the name, and it allows you to write beautiful code while writing accompanying LaTeX and Markdown to document your methadology
 
 Once you have all three of these downloaded, you are off to the races! Note that for this guide all of the setup instructions are for **Windows** but are mostly the same for Linux with plenty of helpful resources online.
 
