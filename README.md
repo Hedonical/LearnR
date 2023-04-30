@@ -51,3 +51,9 @@ Once you have all three of these downloaded, you are off to the races! Note that
 ---
 
 ## Welcome to R!
+
+Remember to take your time as you go through these guides. Everything will not make sense at first and that is to be expected. This resource is meant as a reference guide that you can always come back to, and memorization is not the goal, understanding the overarching concepts is. 
+
+### Getting oriented
+
+Let's start by opening the Rstudio program that is downloaded on your system.
