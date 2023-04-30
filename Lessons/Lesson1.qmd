@@ -1,0 +1,153 @@
+---
+title: "Installing and Loading Packages"
+format: html
+editor: visual
+---
+
+## Table of Contents
+
+------------------------------------------------------------------------
+
+-   [Welcome to Quarto!]
+
+-   [Installing a Package]
+
+-   [Loading a Package]
+
+-   [What's pacman?]
+
+-   [Core Packages to Know]
+
+    -   [Here]
+
+    -   [Conflicted]
+
+    -   [Tidyverse]
+
+------------------------------------------------------------------------
+
+## Welcome to Quarto!
+
+As you can see, a quarto file looks a lot like a markdown document. That is because it mostly is except for the fact that we can write and run R code within it!
+
+## Installing a Package 
+
+When you install a package in R, you are downloading someone else's code into a file directory that R can pull from. Packages can contain helpful functions or even just a dataset.
+
+Let's get started by looking at a R coding cell where we are installing the package pacman.
+
+```{r}
+# install pacman
+install.packages("pacman")
+```
+
+When you hit the green button to run this cell, you should see a bunch of text plop out explaining that the package has been downloaded, but you don't want R to install the package every time you load the program. What if we could write a check that only installs the package if it is already installed?
+
+Thankfully, R has a helpful function called `installed.packages()` which lists all of the packages you have installed rather than installing the package. We specifically want the names of packages installed.
+
+```{r}
+# check whether or 
+if ("pacman" %in% rownames(installed.packages())){
+  print("Pacman is installed!")
+}
+```
+
+The `%in%` part of the code asks R whether the pacman name is among the installed packages. Since we just installed pacman, the print statement appears. Now, let's combine this if statement with `installed.packages()` to only install the package if needed. But, since we only want it to install if pacman is not installed, we add the `!` symbol in the logical check.
+
+```{r}
+if (!"pacman" %in% rownames(installed.packages())){
+  install.packages("pacman")
+}
+```
+
+## Loading a Package
+
+Installing a package does not mean you can actually use it. This is because installing a package only downloads it to your computer's hard driver or solid state disk (SSD). For R to use the package, we need to load it into memory. This is done using the `library()` function.
+
+```{r}
+library("pacman")
+```
+
+If you ever run into errors or it seems like R cannot find a package, we can always check which packages are currently loaded using the `sessionInfo()` function.
+
+```{r}
+sessionInfo()
+```
+
+In this case, you should see pacman mentioned underneath "other attached packages". This means that it has successfully loaded!
+
+## What's pacman?
+
+You may have been wondering what is this pacman package you had me install and load? Well, pacman allows you only use `install.packages()` and `library()` once. Once downloaded and loaded, it's a really handy tool that will handle downloading and loading all of the other packages you name, and it checks whether a package has already been installed so you don't have to! We are specifically, going to use the function `pacman::p_load`. Notice that I call `pacman::` this isn't necessary but it tells the computer I specifically want to call the function `p_load` located within the package `pacman` and specificity never hurts.
+
+```{r}
+if (!"pacman" %in% rownames(installed.packages())){
+  install.packages("pacman")
+}
+
+library("pacman")
+
+pacman::p_load("here", "conflicted", "tidyverse")
+```
+
+Remember, we still need pacman to be installed and loaded before we can use it, so you will want the code we previously wrote in order to use it.
+
+Let's check whether pacman worked.
+
+```{r}
+sessionInfo()
+```
+
+You should see the packages `here`, `tidyverse`, and `conflicted` as we instructed pacman to load!
+
+## Core Packages to Know
+
+I may sound like a broken record, but the best part of R really is the packages and community behind them. I am going to introduce you to three packages other than the already explored `pacman` that I always load no matter the project.
+
+### Here
+
+`here` is a simple package that tells you where you are. Specifically, where you are in your computers file directory. This may seem boring, but hardcoding file paths will cause pain and misery later on, especially if you ever want to share your code with someone else. You may see online that some user's change their current working directory (CWD) to never have to use file paths. **DO NOT DO THIS**. This can break your code and have very bad side effects. Let's use `here` instead!
+
+```{r}
+
+here()
+```
+
+When you run the code cell you will see your CWD path plopped out. Specifically, we are in the LeanR folder. You may be wondering if this lesson file is in the Lessons folder why isn't our CWD there? This is because the CWD is defined by where your R project file is. If you want the path to the Lessons folder path, simply provide the name of that folder as an argument to `here()`.
+
+```{r}
+
+here("Lessons")
+```
+
+Or if you want the Lesson1 file in the lessons folder.
+
+```{r}
+
+here("Lessons", "Lesson1.qmd")
+```
+
+If you ever want to load something from a file path, please use `here()`. You and anyone that uses your code will thank you.
+
+### Conflicted
+
+Conflicted serves a very important purpose: preventing you from ever having namespace errors. A namespace error is when you have two functions or objects with the same name. This is very common error that won't necessarily create an error message and can be frustrating to debug. Simply, by loading `Conflicted` it will check for these conflicts and force you to fix them.
+
+Let me demonstrate by calling the `filter()` function.
+
+```{r}
+
+filter()
+```
+
+Conflicted will tell you the `filter()` function exists in two packages: dplyr and stats. We could have avoided this error by specifying the package (`dplyr::filter()`), but conflicted also gives us a handy piece of code where we can specify for the rest of the document which one we wish to use. Let's specify we only want to use the `filter()` function from dplyr.
+
+```{r}
+conflicts_prefer(dplyr::filter)
+```
+
+Done! Now we never have to worry about our code accidentally using the wrong function and producing erroneous results.
+
+### Tidyverse
+
+The Tidyverse is a massive package that contains multiple other handy packages within it. You may have noticed these many packages when we called `sessionInfo()` So many in fact that lesson 2 is dedicated to purely that! Therefore, we won't spend much time covering them here. Suffice it to say, the Tidyverse suite of packages contains every tool you will need to load, clean, analyze, and even visualize datasets.
