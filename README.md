@@ -11,7 +11,9 @@
   * [Downloading R](#downloading-r)
   * [Downloading Rstudio](#downloading-rstudio)
   * [Downloading Quarto](#downloading-quarto)
-* [Welcome to R!](#welcome-to-r)
+  * [Clone This Repo](#downloading-quarto)
+* [Welcome to R!](#clone-this-repo)
+  * [Getting Oriented](#getting-oriented)
 
 ---
 
@@ -47,6 +49,12 @@ Once you have all three of these downloaded, you are off to the races! Note that
 2. Click the download link that corresponds to your operating system
 
 3. Allow the setup wizard to run and accept all of the default settings
+
+### Clone this repo
+
+If you have not done so already, clone this repo into whichever location you would like to keep it.
+
+https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository
 
 ---
 
