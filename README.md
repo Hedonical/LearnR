@@ -109,7 +109,7 @@ This lesson will cover:
 
 -   Core packages to know
 
----
+------------------------------------------------------------------------
 
 ## Lesson 2: Into the Tidyverse
 
