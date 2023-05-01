@@ -14,7 +14,7 @@ editor: visual
 
 -   [Loading a Package]
 
--   [What's pacman?]
+-   [What's pacman?](#whats-pacman)
 
 -   [Core Packages to Know]
 
@@ -30,7 +30,7 @@ editor: visual
 
 As you can see, a quarto file looks a lot like a markdown document. That is because it mostly is except for the fact that we can write and run R code within it!
 
-## Installing a Package 
+## Installing a Package
 
 When you install a package in R, you are downloading someone else's code into a file directory that R can pull from. Packages can contain helpful functions or even just a dataset.
 
@@ -76,7 +76,7 @@ sessionInfo()
 
 In this case, you should see pacman mentioned underneath "other attached packages". This means that it has successfully loaded!
 
-## What's pacman?
+## What's pacman? {#whats-pacman}
 
 You may have been wondering what is this pacman package you had me install and load? Well, pacman allows you only use `install.packages()` and `library()` once. Once downloaded and loaded, it's a really handy tool that will handle downloading and loading all of the other packages you name, and it checks whether a package has already been installed so you don't have to! We are specifically, going to use the function `pacman::p_load`. Notice that I call `pacman::` this isn't necessary but it tells the computer I specifically want to call the function `p_load` located within the package `pacman` and specificity never hurts.
 

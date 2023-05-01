@@ -4,23 +4,238 @@ format: html
 editor: visual
 ---
 
-## Quarto
+## Table of Contents
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+------------------------------------------------------------------------
 
-## Running Code
+-   [Intro & Packages]
 
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+-   [Loading a Dataset]
+
+-   [Wrangling with dplyr]
+
+    -   [The pipe]
+
+    -   [Mutate()]
+
+    -   [Case_when()]
+
+    -   [Rename()]
+
+    -   [Filter()]
+
+    -   [Select()]
+
+    -   [Distinct()]
+
+    -   [Group_by()]
+
+    -   [Stacking pipes]
+
+------------------------------------------------------------------------
+
+## Intro & Packages
+
+This lesson will not be an exhaustive coverage of the Tidyverse package. Instead, I will go over the core tools which the Tidyverse package provides and how to use them. Before we do anything else, we first always need to load the relevant functions that we will be using.
 
 ```{r}
-1 + 1
+if (!"pacman" %in% rownames(installed.packages())){
+  install.packages("pacman")
+}
+
+library("pacman")
+
+pacman::p_load("here", "conflicted", "tidyverse")
+
+conflicts_prefer(dplyr::filter)
 ```
 
-You can add options to executable code like this
+## Loading a Dataset
+
+Before we can use any other tool in the Tidyverse package, we first need a dataset to operate on. In this case I have a copy of a beaver dataset located in the Datasets folder, containing the date and time of observations of a beaver, the body temperature of the beaver, and whether the beaver is active. Tidyverse provides us with the handy function `read.csv()` where we need to provide the file path to the beaver data file. Remember to use `here()` to save yourself a lot of headache. I am going to store the data we read from the beaver.csv into a dataframe variable called **beaver**.
 
 ```{r}
-#| echo: false
-2 * 2
+
+beaver = read.csv(here("Datasets", "beaver.csv"))
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+You may have noticed that in the top right panel of your Rstudio a variable called **beaver** popped up. This is Rstudio's data panel and is incredibly helpful for viewing and keeping track of what variables we have loaded and or created. Try clicking on **beaver** in this panel to double check that it loaded properly.
+
+We can also check it using the `head()` function to view the first few rows.
+
+```{r}
+head(beaver)
+```
+
+Now that we have a dataset, we can start data cleaning and wrangling!
+
+## Wrangling with dplyr
+
+dplyr is the core package of tidyverse. It's functions allow us to perform data analysis across an entire dataset. As with the Tidyverse, dplyr is so large that we will not be covering in it, but we will go over the functions that you will use the most.
+
+### The Pipe
+
+A core component of dplyr is the pipe operator, denoted as `%>%`. This symbol may seem completely bizarre but its incredibly powerful and convenient. A `%>%` passes the output of one function to be the input of another. Let's take a look at an example.
+
+```{r}
+x = c(1,2,4)
+
+mean(x) %>% as.character()
+
+```
+
+In this case I am defining a double (single dimension array) called `x`. I want to find the mean of `x` then convert it to a string. Always, read pipes left to right as you can intuitively follow what happens in one functions as its return is passed to the next. If you have coded in Python be careful not to confuse the `%>%` operator with the `.` operator in Python as you aren't accessing a method from a class. A pipe simple takes the output of one function and passes it to another. Another important thing to note is that since I am only calling functions and never assigning the return to any variable, my result goes into the void.
+
+### Mutate()
+
+`mutate()` performs an operation on a column. You can provide it with any function that accepts a vector as an input (because a column is just a one dimensional vector) and it will happily replace a column with that value or create an entirely new one to store it.
+
+This is also where we will see the second super power of the `%>%` operator as when you use it on a dataframe, you can call any of the columns of that dataframe as if they are variables. Let's start by taking the average body temperature of the entire dataset and storing it in an entirely new column called `avg_temp`.
+
+```{r}
+
+beaver = beaver %>% mutate(avg_temp = mean(temp))
+```
+
+Remember, if we actually want to change the original dataset then we need to assign the output of our operations to the original dataset **beaver**. When we read from left to right we are performing a mutate on the beaver dataset, specifically we are accessing the temp column, finding the mean of it, and then assigning the result to a new column called avg_temp.
+
+Let's see if it worked as intended:
+
+```{r}
+head(beaver)
+```
+
+You should see that our new column has been created with the average temperature for the entire temp column.
+
+### Case_when()
+
+`case_when()` is the most common helper function we use to make mutate even more powerful. `case_when()` is just an if else statement, but it allows you to do a logical operation across the entire column.
+
+For example, say I want to add a column indicating whether or not the beaver is **cold** or **hot**. You could use a for loop to check each value and then assign the resulting indicator in a new column, but this is inefficient and messy. I will `case_when()` and `mutate()` to create a new column called status, with any temp row that has a value below **37** meaning cold and any value above **37** indicating warm.
+
+```{r}
+
+beaver = beaver %>% mutate(status = case_when(temp < 37 ~ "cold",
+                                              temp > 37 ~ "hot",
+                                              .default = "Just Right"))
+```
+
+A `case_when()` can have as many logical checks as you wish with the same basic format of a logical check and then a tilde `~` with the desired output on the right of the tilde. For cold, I am saying any temp value less than 37 should populate the status column with the string "cold". You may also notice that since I am purely using \> or \<, what happens if my value is exactly 37? In this case, I used the `.default` argument which tells `case_when()` if none of the above checks were true place in the default value. So if the beaver temperature is 37, it will not be too cold or too hot but just right.
+
+### Rename()
+
+Often times you will have a dataset with messy column names, thankfully there is the `rename()` function to handle this. Let's look at the **beaver** dataset and say that I want to rename the activ column to active.
+
+```{r}
+
+beaver = beaver %>% rename(active = "activ")
+```
+
+Remember to make the former column name a string.
+
+### filter()
+
+`filter()` is for when you want to remove rows based on a logical check. For example, say that we only want rows in the beaver dataset when the beavers were cold. We are specifically filtering for when the **status** column is equal to the string "cold". This is a destructive action as it deletes any data that doesn't pass the filter, so let's create a new dataframe called cold_beaver.
+
+```{r}
+
+cold_beaver = beaver %>% filter(status == "cold")
+```
+
+We can see in the top right of Rstudio that the filter worked as the new cold_beaver dataset has 94 rows compared to the original beaver having 114 rows. Filter can work with any logical comparison that can be applied to a vector so the world is your oyster. For example, let's also filter for rows that have a beaver temp below 36.5
+
+```{r}
+cold_beaver = beaver %>% filter(temp < 36.5)
+```
+
+Again, we can see that cold_beaver has fallen to only 4 rows, demonstrating that our filtering removed some rows.
+
+### select()
+
+`select()` enables you to choose or drop certain columns. For example, let's say that we only want the day, time, active, and status columns from the recently filtered cold_beaver dataset.
+
+```{r}
+
+cold_beaver = cold_beaver %>% select(day, time, active, status)
+
+head(cold_beaver)
+```
+
+Or you can use the `-` symbol before a column name to delete them instead of saving them. For example, let's say that I didn't actually want the time.
+
+```{r}
+
+cold_beaver = cold_beaver %>% select(-time)
+
+head(cold_beaver)
+```
+
+You can see now all we have is the day, active, and status, saving us the trouble of explicitly selecting all three.
+
+### distinct()
+
+`distinct()` removes any duplicate rows, specifically with regard to the columns you provide to the argument. Let's say I only want rows with a distinct status from the beaver dataset.
+
+```{r}
+
+head(beaver %>% distinct(status))
+```
+
+You can see by default, `distinct()` deletes all columns except for the one you specify. To stop this, you need to also set the `.keep_all` argument to true.
+
+```{r}
+
+head(beaver %>% distinct(status, .keep_all = TRUE))
+```
+
+Now, we can see we have received three rows, one for each status we have.
+
+### Group_by()
+
+`group_by()` allows you to subset rows so you can perform certain operations on the subset instead of the entire column. `group_by()` by itself won't do anything, but you will see the results when you use any of the other dplyr functions. For example, let's say I want to change the avg_temp column to be the average temperature for either the hot or cold beavers. First, we need to `group_by()` the status.
+
+```{r}
+
+beaver = beaver %>% group_by(status)
+```
+
+Now, we just perform our operation and see if each status has it's own avg_temp value.
+
+```{r}
+
+beaver = beaver %>% mutate(avg_temp = mean(temp))
+
+head(beaver %>% distinct(status, .keep_all = TRUE))
+```
+
+If you hover over the beaver variable in the top right of the Rstudio environment you will notice that our type changed from a dataframe to a grouped dataframe. This is very important! The grouping will stay unless you perform a new grouping or use `ungroup()`. Make sure to keep track of whether your dataframe is grouped to avoid errors.
+
+```{r}
+
+beaver = beaver %>% ungroup()
+```
+
+Now, if you hover over it will be back to a generic dataframe.
+
+### Stacking Pipes
+
+Since `%>%` just direct the output of one function to another, there is no reason why we can't place many of them together to perform multiple operations in one go. This makes our code much more tidy and readable.
+
+To prove this to you, let's try stacking multiple pipes to answer a question from the beaver dataset. Specifically, how much warmer are active beavers on average than nonactive ones?
+
+Let's think about what tools from our toolbelt we will need to answer this:
+
+-   `group_by()` to perform operations by active or nonactive
+
+-   `mutate()` to find the average temperature
+
+-   `distinct()` to reduce to only one row for active and one for nonactive
+
+Now, put it together.
+
+```{r}
+
+beaver %>% group_by(active) %>% mutate(avg_temp = mean(temp)) %>% distinct(active, .keep_all = TRUE)
+```
+
+From this, we can see that the avg_temp for an active beaver is 37.22 compared to 36.84 for a nonactive beaver as well as how you can use multiple `%>%` and dplyr functions to reach a conclusion.
