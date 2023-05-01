@@ -109,6 +109,8 @@ This lesson will cover:
 
 -   Core packages to know
 
+---
+
 ## Lesson 2: Into the Tidyverse
 
 The Tidyverse is a huge package that has many of the most useful packages in R contained within it. It has everything you will need to load, clean, analyze, and visualize any data you have!
